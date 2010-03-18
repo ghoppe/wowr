@@ -71,8 +71,10 @@ module Wowr
 		
 		@@login_url = 'login/login.xml'
 
-		@@dungeons_url = 'data/dungeons.xml'                	
+		@@dungeons_url = '_data/dungeons.xml'
 		@@dungeons_strings_url = 'data/dungeonStrings.xml'
+		
+		@@factions_url = '_data/factions.xml'
 
 		@@max_connection_tries = 10
 		
@@ -783,7 +785,6 @@ module Wowr
 			
 			# dungeon_strings contains names for ids
 			dungeon_xml = get_xml(@@dungeons_url, options)%'dungeons'
-			
 			dungeon_strings_xml = get_xml(@@dungeons_strings_url, options)
 			
 			results = {}
@@ -792,19 +793,25 @@ module Wowr
 			if dungeon_xml && !dungeon_xml.children.empty?
 				(dungeon_xml/:dungeon).each do |elem|
 					dungeon = Wowr::Classes::Dungeon.new(elem)
-					results[dungeon.id] = dungeon		if dungeon.id
+
+#					results[dungeon.id] = dungeon		if dungeon.id
+          # 10/25 dungeons have the same id. 
+          # Another reason not to do it this way is that going through 
+          # all resulting dungeons is tedious -- there will be duplicates
+
 					results[dungeon.key] = dungeon	if dungeon.key
+					# better to populate the results with just the dungeon.key
+					
 				end
 				
 				(dungeon_strings_xml/:dungeon).each do |elem|
-					id = elem[:id].to_i
+#					id = elem[:id].to_i
 					key = elem[:key]
 					
-					if (results[id])
-						results[id].add_name_data(elem)
-					elsif (results[key])
+					if (results[key])
+  					# key is unique, id is not unique for 25/10 man dungeons in armory xml
 						results[key].add_name_data(elem)
-					end					
+					end
 				end
 			else
 				raise Wowr::Exceptions::InvalidXML.new()

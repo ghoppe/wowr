@@ -40,17 +40,20 @@ module Wowr
 					# TODO: Is this insane?
 					#				After object test, appears this will be references to the same object
 					boss = Boss.new(elem)
+
 					@bosses[boss.id]	= boss	if boss.id
-					@bosses[boss.key]	= boss	if boss.key
+					# @bosses[boss.key]	= boss	if boss.key
+					# Bleh to duplicates in boss list. Need a find by key method.
 				end
 			end
 			
 			# Add the name data from dungeonStrings.xml
 			def add_name_data(elem)
-				# puts elem.raw_string.to_yaml
+			#	puts elem.raw_string.to_yaml
 				@name = elem.attributes["name"]
 				
 				(elem/:boss).each do |boss_elem|
+  		#		puts boss_elem.raw_string.to_yaml
 					id = boss_elem[:id].to_i
 					key = boss_elem[:key]
 					
